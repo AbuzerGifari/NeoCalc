@@ -1,4 +1,55 @@
+import sympy as sp
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 
+console = Console()
+
+class NeoCalc:
+    def __init__(self):
+        self.history = []
+
+    def evaluate(self, expression):
+        try:
+            # Parse the string into a SymPy object
+            expr = sp.sympify(expression)
+            
+            # Simplify and solve
+            result = sp.simplify(expr)
+            
+            # If it's an equation (contains symbols), let's try to solve for x
+            symbols = expr.free_symbols
+            solution = None
+            if symbols:
+                solution = sp.solve(expr, list(symbols)[0])
+
+            return result, solution
+        except Exception as e:
+            return None, str(e)
+
+    def display_ui(self):
+        console.print(Panel("[bold cyan]NeoCalc v1.0[/bold cyan] - Open Source Symbolic Engine", expand=False))
+        
+        while True:
+            user_input = console.input("[bold green]math » [/bold green]")
+            
+            if user_input.lower() in ['exit', 'quit']:
+                break
+                
+            res, sol = self.evaluate(user_input)
+            
+            if res is not None:
+                table = Table(show_header=False, border_style="magenta")
+                table.add_row("Result", str(res))
+                if sol:
+                    table.add_row("Solutions", str(sol))
+                console.print(table)
+            else:
+                console.print(f"[bold red]Error:[/bold red] {sol}")
+
+if __name__ == "__main__":
+    calc = NeoCalc()
+    calc.display_ui()
 Commit at 2024-01-02T10:26:59.681959
 Commit at 2024-01-25T18:17:55.847236
 Commit at 2024-01-27T11:00:50.958357
